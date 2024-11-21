@@ -89,25 +89,25 @@ class Game:
             #O jogador recebe suas primeiras opções
             player_decision = self.input.prompt_action()
 
-
-
-            match player_decision:
-                case self.HIT:
-                    self.give_random_card_to(self.player_cards)
-                    self.turn += 1
-                    if self.get_player_value() > 21:
-                        self.busted = True
-                
-                case self.STAND:
-                    self.dealer_cards.append(self.dealer_darkcard)
-                    if self.get_dealer_value() < 17:
-                        while True:
-                            self.give_random_card_to(self.dealer_cards)
-                            if self.get_dealer_value() > 16:
-                                break
-                        if self.get_dealer_value() > 21:
-                            self.dealer_busted = True
-                    break
+            if player_decision == self.HIT:
+                self.history.append({'name':'hit'})
+                self.give_random_card_to(self.player_cards)
+                self.turn += 1
+                if self.get_player_value() > 21:
+                    self.busted = True
+            
+            elif player_decision == self.STAND:
+                self.history.append({'name':'stand'})
+                self.dealer_cards.append(self.dealer_darkcard)
+                self.history.append(self.dealer_darkcard)
+                if self.get_dealer_value() < 17:
+                    while True:
+                        self.give_random_card_to(self.dealer_cards)
+                        if self.get_dealer_value() > 16:
+                            break
+                    if self.get_dealer_value() > 21:
+                        self.dealer_busted = True
+                break
         
         if self.busted:
             self.credits -= self.this_bet
@@ -138,20 +138,14 @@ class Game:
         card = choice(self.available_cards)
         self.available_cards.remove(card)
         cardlist.append(card)
+        self.history.append(card)
 
     def get_dealer_value(self, return_ace=False):
         return self.calculate_value(self.dealer_cards)
 
     def get_player_value(self,return_ace=False):
         return self.calculate_value(self.player_cards)
-    
-    def get_ace_int(card_list):
-        aces = 0
-        for card in card_list:
-            if card['name'] == 'Ace':
-                aces += 1
-        
-        return aces
+
     def game_reset(self):
         self.turn = 1
         self.busted = False
@@ -163,7 +157,17 @@ class Game:
         self.dealer_cards = []
         self.dealer_darkcard = None
         self.player_cards = []
+        self.history = []
 
+    @staticmethod
+    def get_ace_int(card_list):
+        aces = 0
+        for card in card_list:
+            if card['name'] == 'Ace':
+                aces += 1
+        
+        return aces
+    
     @staticmethod
     def calculate_value(card_list):
         total_value = 0
@@ -187,4 +191,5 @@ class Game:
 
 
 if __name__ == "__main__":
-    Game(input_methods.NeuralNetworkInput, 500,2000)
+
+    Game(input_methods.TerminalInput, 500,5)
