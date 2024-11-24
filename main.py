@@ -188,8 +188,46 @@ class Game:
         
         return total_value
 
+def terminal_interface():
+    print('Welcome to Blackjack, you have less than 50% chances of winning, good luck!')
+    player_decision = input('''
+>> Play
+>> Train AI
 
+-- ''')
+
+    if player_decision[0].lower().strip() == 'p':
+        rounds = ''
+        while type(rounds) != int:
+            rounds = input('Rounds you want to play: ')
+            try:
+                rounds = int(rounds)
+                rounds = abs(rounds)
+            except:
+                pass
+        
+        Game(input_methods.TerminalInput, 500, rounds)
+    elif player_decision[0].lower() == 't':
+        rounds = ''
+        epochs = ''
+
+        while type(rounds) != int:
+            rounds = input('Rounds per game: ')
+            try:
+                rounds = abs(int(rounds))
+            except:
+                pass
+        
+        while type(epochs) != int:
+            epochs = input('Games to train: ')
+            try:
+                epochs = abs(int(epochs))
+            except:
+                pass
+        
+        print('Staring Training...')
+        for _ in range(epochs):
+            Game(input_methods.MonteCarloTraining, 1, rounds)
 
 if __name__ == "__main__":
-
-    Game(input_methods.TerminalInput, 500,5)
+    terminal_interface()
